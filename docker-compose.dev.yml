@@ -1,0 +1,63 @@
+services:
+  # API Go application
+  api:
+    container_name: dev-api
+    build:
+      context: ./api
+      dockerfile: dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./api:/app
+      - go_cache_api:/go/pkg/mod
+    env_file:
+      - .env
+    environment:
+      - CGO_ENABLED=0
+      - HOST=tui
+    command: sh -c "go mod download && go run ."
+    depends_on:
+      - tui
+    restart: unless-stopped
+
+  # TUI Go application (SSH server)
+  tui:
+    container_name: dev-tui
+    build:
+      context: ./tui
+      dockerfile: dockerfile.dev
+    ports:
+      - "42069:42069"
+    volumes:
+      - ./tui:/app
+      - go_cache_tui:/go/pkg/mod
+      - tui_ssh:/app/.ssh
+    environment:
+      - CGO_ENABLED=0
+      - TERM=xterm-256color
+      - COLORTERM=truecolor
+    command: sh -c "mkdir -p .ssh && (test -f .ssh/id_ed25519 || ssh-keygen -t ed25519 -f .ssh/id_ed25519 -N '') && go mod download && go run ."
+    restart: unless-stopped
+
+  # React/Vite frontend
+  frontend:
+    container_name: dev-frontend
+    build:
+      context: ./app
+      dockerfile: dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: bun run dev --host 0.0.0.0
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  go_cache_api:
+  go_cache_tui:
+  tui_ssh:

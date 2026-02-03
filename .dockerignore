@@ -1,0 +1,38 @@
+# Development files
+.env.local
+.env.development
+*.log
+.DS_Store
+
+# Development Docker files
+api/dockerfile.dev
+app/dockerfile.dev
+tui/dockerfile.dev
+docker-compose.dev.yml
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# Go build artifacts
+api/server
+tui/tui
+**/*.exe
+**/*.exe~
+**/*.dll
+**/*.so
+**/*.dylib
+**/*.test
+**/*.out
+
+# Node/Bun artifacts
+app/node_modules
+app/dist
+
+# Documentation
+README.md
+*.md

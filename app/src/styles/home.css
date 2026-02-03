@@ -1,0 +1,170 @@
+#canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+.about {
+  position: absolute;
+  bottom: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 18px;
+  color: #c5ccbf;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  max-width: 800px;
+  padding: 0 20px;
+  z-index: 10;
+}
+
+.about p {
+  margin: 0;
+}
+
+.buttons {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  z-index: 10;
+}
+
+button {
+  padding: 15px 30px;
+  font-family: "Fira Code", monospace;
+  font-size: 16px;
+  font-weight: 600;
+  background: rgba(30, 30, 30, 0.9);
+  color: #ff8800;
+  border: 2px solid #ff8800;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+button:hover {
+  background: #ff8800;
+  color: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(255, 136, 0, 0.4);
+}
+
+/* Tooltip styles */
+button[data-tooltip] {
+  position: relative;
+}
+
+button[data-tooltip]::before,
+button[data-tooltip]::after {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+/* Tooltip bubble */
+button[data-tooltip]::before {
+  content: attr(data-tooltip);
+  bottom: calc(100% + 15px);
+  background: rgba(30, 30, 30, 0.95);
+  color: #c5ccbf;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid #ff8800;
+  white-space: nowrap;
+  box-shadow: 0 5px 20px rgba(255, 136, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+/* Tooltip tail/arrow */
+button[data-tooltip]::after {
+  content: "";
+  bottom: calc(100% + 3px);
+  border: 8px solid transparent;
+  border-top-color: #ff8800;
+}
+
+/* Inner arrow to match background */
+button[data-tooltip]:hover::after {
+  filter: drop-shadow(0 2px 0 rgba(30, 30, 30, 0.95));
+}
+
+/* Show on hover */
+button[data-tooltip]:hover::before,
+button[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+button[data-tooltip]:hover::before {
+  transform: translateX(-50%) translateY(-5px);
+}
+
+button[data-tooltip]:hover::after {
+  transform: translateX(-50%) translateY(-5px);
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-content {
+  position: relative;
+  width: 90vw;
+  height: 85vh;
+  background: #1e1e1e;
+  border-radius: 12px;
+  border: 2px solid #ff8800;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(255, 136, 0, 0.3);
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  background: transparent;
+  color: #888;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 136, 0, 0.2);
+  color: #ff8800;
+  transform: none;
+  box-shadow: none;
+}

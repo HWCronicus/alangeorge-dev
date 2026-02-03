@@ -1,0 +1,144 @@
+# General
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.log
+*.swp
+*.swo
+*~
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
+*.sublime-project
+.fleet/
+.helix/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.envrc
+
+###################
+# Node.js / Vite / React / TypeScript (app folder)
+###################
+
+# Dependencies
+app/node_modules/
+app/package-lock.json
+app/yarn.lock
+app/pnpm-lock.yaml
+app/bun.lockb
+app/.bun/
+app/.pnp
+app/.pnp.js
+
+# Build outputs
+app/dist/
+app/build/
+app/out/
+app/.next/
+app/.nuxt/
+app/.cache/
+app/.parcel-cache/
+
+# Vite
+app/.vite/
+app/vite.config.js.timestamp-*
+app/vite.config.ts.timestamp-*
+
+# Testing
+app/coverage/
+app/.nyc_output/
+app/*.lcov
+
+# TypeScript
+app/*.tsbuildinfo
+
+# Misc
+app/.turbo/
+app/.vercel/
+
+###################
+# Go (API and TUI folders)
+###################
+
+# Binaries for programs and plugins
+api/*.exe
+api/*.exe~
+api/*.dll
+api/*.so
+api/*.dylib
+api/api
+api/main
+
+tui/*.exe
+tui/*.exe~
+tui/*.dll
+tui/*.so
+tui/*.dylib
+tui/tui
+tui/main
+
+# Test binary, built with `go test -c`
+api/*.test
+tui/*.test
+
+# Output of the go coverage tool
+api/*.out
+api/coverage.txt
+api/coverage.html
+tui/*.out
+tui/coverage.txt
+tui/coverage.html
+
+# Dependency directories
+api/vendor/
+tui/vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Air live reload (if using)
+api/tmp/
+tui/tmp/
+
+# Build directories
+api/bin/
+api/build/
+tui/bin/
+tui/build/
+
+# SSH keys and config (TUI folder)
+tui/.ssh/
+
+# Database files (if any)
+*.db
+*.sqlite
+*.sqlite3
+
+# Compiled Object files, Static and Dynamic libs
+*.o
+*.a
+
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+# cgo generated files
+_cgo_*
+_cgo_export.*
+
+# Debug files
+*.dSYM/
+*.pdb

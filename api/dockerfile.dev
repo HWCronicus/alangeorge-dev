@@ -1,0 +1,24 @@
+FROM golang:1.25.4-alpine
+
+# Install necessary packages for development
+RUN apk --no-cache add ca-certificates git openssh-keygen ncurses-terminfo-base
+
+WORKDIR /app
+
+# Set environment variables for Go
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+
+# Copy go mod files first for better caching
+COPY go.mod go.sum* ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+EXPOSE 8080
+
+# Use go run for hot reloading (requires manual restart, but changes are reflected)
+CMD ["go", "run", "."]
