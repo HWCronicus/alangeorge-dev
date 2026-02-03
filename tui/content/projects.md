@@ -1,5 +1,21 @@
 # Projects
 
+## AlanGeorge.Dev
+
+**Home Page**
+
+A React landing page with WebGL 3D effects, and in browser terminal emulation
+
+- WebGL Animated 3D graphics
+- Terminal emulation
+- Responsive design
+- Go API with http and websocket support
+
+**Tech Stack:** Typescript, Go, Vite, React, Three.JS, xTerm
+[GitHub Repository](https://github.com/HWCronicus/alangeorge-dev)
+
+---
+
 ## SSH Resume
 
 **Interactive Terminal Resume**
@@ -17,45 +33,35 @@ An innovative terminal-based resume application built with Go and Bubble Tea.
 
 ---
 
-## CLI Task Manager
+## Hardware Monitor
 
-**Terminal Productivity Tool**
+**System Information Tool**
 
-A command-line task management application with rich features.
+A Windows desktop application that shows real-time stats about system temperatures and usage
 
-- Task creation and tracking
-- Priority management
-- Due date reminders
-- Export to various formats
+- Real-time CPU, GPU, and memory monitoring
+- System load and resource usage display
+- Works with all hardware configurations
+- Lightweight performance footprint
+- Minimizes to system tray
+- Clean, responsive interface
 
-**Tech Stack:** Go, Cobra, SQLite
-
----
-
-## Weather Dashboard
-
-**Real-time Weather Application**
-
-A web application displaying weather information with beautiful visualizations.
-
-- Real-time weather data
-- 7-day forecasts
-- Location search
-- Responsive design
-
-**Tech Stack:** React, Node.js, OpenWeather API
+**Tech Stack:** Typescript, C#, React, .NET 9.0, LibreHardwareMonitor
+[GitHub Repository](https://github.com/HWCronicus)
 
 ---
 
-## Code Snippet Manager
+## Reef Tracker
 
-**Developer Tool**
+**Reef Aquarium Parameter Tracker**
 
-A tool for organizing and sharing code snippets.
+Reef aquarium parameter tracking application with date and value searching and histogram generation
 
-- Syntax highlighting
-- Tag-based organization
-- Export/import functionality
-- Team collaboration features
+- Track water parameters over time
+- Search and filter by date ranges
+- Visual histogram analytics
+- SQLite database storage
+- Responsive web interface
 
-**Tech Stack:** TypeScript, Express, PostgreSQL
+**Tech Stack:** Typescript, SQLite, NextJS, Prisma
+[GitHub Repository](https://github.com/HWCronicus)

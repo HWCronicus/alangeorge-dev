@@ -2,7 +2,7 @@
 
 ### Full Stack Software Engineer
 
-#### _DoD Secret Security Clearance_
+#### _Inactive DoD Secret Security Clearance_
 
 ---
 
@@ -17,12 +17,12 @@ LinkedIn: [in/alan-e-george/](https://www.linkedin.com/in/alan-e-george/)
 ### Skills
 
 - Typescript
-- Javascript
-- React.JS
+- Go
+- C#
+- React
 - Angular
 - PostgreSQL
 - MySQL
-- C#
 - .NET
 - CSS
 - JQuery

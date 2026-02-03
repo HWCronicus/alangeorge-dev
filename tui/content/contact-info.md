@@ -10,13 +10,13 @@ I'm always open to discussing new opportunities, collaborations, or just having 
 
 **LinkedIn:** linkedin.com/in/alangeorge
 
-**Email:** alan@example.com
+**Email:** alan@alangeorge.dev
 
 **Website:** alangeorge.dev
 
 ## Location
 
-Based in San Francisco Bay Area, CA
+Based in Orange Park, Florida (Jacksonville Metro Area)
 
 Open to remote opportunities worldwide
 
