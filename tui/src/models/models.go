@@ -19,7 +19,6 @@ type view int
 
 const (
 	splashView view = iota
-	mainView
 	aboutMeView
 	skillsView
 	workExperienceView
@@ -152,8 +151,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return splashTimeoutMsg{}
 			})
 		}
-		m.CurrentView = mainView
-		return m, nil
+		m.CurrentView = aboutMeView
+		m.loadViewportContent()
 
 	case tea.WindowSizeMsg:
 		oldWidth := m.TerminalWidth
@@ -208,7 +207,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		if m.CurrentView == splashView {
-			m.CurrentView = mainView
+			m.CurrentView = aboutMeView
+			m.loadViewportContent()
 			return m, nil
 		}
 
@@ -231,8 +231,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.loadViewportContent()
 
 		case "b", "backspace", "esc":
-			if m.CurrentView != mainView {
-				m.CurrentView = mainView
+			if m.CurrentView != aboutMeView {
+				m.CurrentView = aboutMeView
+				m.loadViewportContent()
 			}
 
 		case "1", "2", "3", "4", "5":
@@ -245,7 +246,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	if m.CurrentView != mainView && m.CurrentView != splashView && m.Ready {
+	if m.CurrentView != splashView && m.Ready {
 		m.Viewport, cmd = m.Viewport.Update(msg)
 		cmds = append(cmds, cmd)
 	}
@@ -262,33 +263,7 @@ func (m Model) View() string {
 		return m.renderSplashScreen()
 	}
 
-	var content string
-
-	switch m.CurrentView {
-	case mainView:
-		content = m.renderMainView("")
-	case aboutMeView:
-		content = m.RenderDetailView("About Me", "This is the About Me view.")
-	case skillsView:
-		content = m.RenderDetailView("Skills", "This is the Skills view.")
-	case workExperienceView:
-		content = m.RenderDetailView("Work Experience", "This is the Work Experience view.")
-	case projectsView:
-		content = m.RenderDetailView("Projects", "This is the Projects view.")
-	case contactInfoView:
-		content = m.RenderDetailView("Contact Info", "This is the Contact Info view.")
-	}
-
-	bordered := gradient.RenderGradientBorder("#ff7300", "#666666", content, m.Width, m.Height, m.renderer)
-
-	if m.TerminalWidth > m.Width {
-		return m.renderer.NewStyle().
-			Width(m.TerminalWidth).
-			AlignHorizontal(lipgloss.Center).
-			Render(bordered)
-	}
-
-	return bordered
+	return m.RenderView()
 }
 
 func (m Model) renderSplashScreen() string {
@@ -345,7 +320,7 @@ func (m Model) RenderMainTitle() string {
 	return m.titleStyle().Render(string(m.AsciiArt))
 }
 
-func (m Model) RenderTabs(content string, showFooter bool) string {
+func (m Model) RenderTabs(content string) string {
 	tabs := []string{"About Me", "Skills", "Work Experience", "Projects", "Contact Info"}
 
 	var renderedTabs []string
@@ -389,18 +364,10 @@ func (m Model) RenderTabs(content string, showFooter bool) string {
 	doc.WriteString("\n")
 	doc.WriteString(m.windowStyle().Width(contentWidth).Render(content))
 
-	if showFooter {
-		footer := m.footerView()
-		if footer != "" {
-			doc.WriteString("\n")
-			doc.WriteString(footer)
-		}
-	} else {
-		bottomBorder := m.renderer.NewStyle().
-			Foreground(m.highlightColor()).
-			Render("└" + strings.Repeat("─", contentWidth) + "┘")
+	footer := m.FooterView()
+	if footer != "" {
 		doc.WriteString("\n")
-		doc.WriteString(bottomBorder)
+		doc.WriteString(footer)
 	}
 
 	return doc.String()
@@ -410,11 +377,7 @@ func (m Model) RenderHelp() string {
 	return m.helpStyle().Render("←/→: navigate • ↑/↓: scroll • 1-5: quick select • enter: select • q: quit")
 }
 
-func (m Model) footerView() string {
-	if !m.Ready || m.CurrentView == mainView {
-		return ""
-	}
-
+func (m Model) FooterView() string {
 	contentWidth := min(150, m.Width-20)
 
 	info := m.infoStyle().Render(fmt.Sprintf("%3.f%%", m.Viewport.ScrollPercent()*100))
@@ -441,17 +404,33 @@ func (m Model) footerView() string {
 	return lipgloss.JoinHorizontal(lipgloss.Center, leftLine, info, rightLine)
 }
 
-func (m Model) renderMainView(middleContent string) string {
+func (m Model) RenderView() string {
+	if m.TerminalWidth < minWidth || m.Height < minHeight {
+		return m.renderResizeMessage()
+	}
+
 	title := m.RenderMainTitle()
 	about := m.aboutStyle().Render("Welcome to Terminal based version of AlanGeorge.Dev, navigate through the sections to learn more about me.")
 
-	var tabs string
-	showFooter := m.CurrentView != mainView && middleContent != ""
-	if middleContent == "" {
-		tabs = m.RenderTabs("Select a section to view details", false)
+	var viewContent string
+	if m.Ready {
+		viewContent = m.Viewport.View()
+		if viewContent == "" {
+			viewContent = "Press a number key (1-5) or use arrow keys and Enter to select a section."
+		}
 	} else {
-		tabs = m.RenderTabs(middleContent, showFooter)
+		viewContent = "Initializing..."
 	}
+
+	contentStyle := m.renderer.NewStyle().
+		Padding(0, 2).
+		Width(min(150, m.Width-15))
+
+	middleContent := contentStyle.Render(viewContent)
+
+	var tabs string
+
+	tabs = m.RenderTabs(middleContent)
 
 	help := m.RenderHelp()
 
@@ -482,7 +461,14 @@ func (m Model) renderMainView(middleContent string) string {
 		AlignHorizontal(lipgloss.Center).
 		Render(help)
 
-	return lipgloss.JoinVertical(lipgloss.Top, top, middle, bottom)
+	joinedVert := lipgloss.JoinVertical(lipgloss.Top, top, middle, bottom)
+
+	bordered := gradient.RenderGradientBorder("#ff7300", "#666666", joinedVert, m.Width, m.Height, m.renderer)
+
+	return m.renderer.NewStyle().
+		Width(m.TerminalWidth).
+		AlignHorizontal(lipgloss.Center).
+		Render(bordered)
 }
 
 func (m *Model) loadViewportContent() tea.Cmd {
@@ -534,26 +520,26 @@ func (m *Model) loadViewportContent() tea.Cmd {
 	return nil
 }
 
-func (m Model) RenderDetailView(titleText, descriptionText string) string {
-	if m.TerminalWidth < minWidth || m.Height < minHeight {
-		return m.renderResizeMessage()
-	}
+// func (m Model) RenderDetailView(titleText, descriptionText string) string {
+// 	if m.TerminalWidth < minWidth || m.Height < minHeight {
+// 		return m.renderResizeMessage()
+// 	}
 
-	var viewContent string
-	if m.Ready {
-		viewContent = m.Viewport.View()
-		if viewContent == "" {
-			viewContent = "Press a number key (1-5) or use arrow keys and Enter to select a section."
-		}
-	} else {
-		viewContent = "Initializing..."
-	}
+// 	var viewContent string
+// 	if m.Ready {
+// 		viewContent = m.Viewport.View()
+// 		if viewContent == "" {
+// 			viewContent = "Press a number key (1-5) or use arrow keys and Enter to select a section."
+// 		}
+// 	} else {
+// 		viewContent = "Initializing..."
+// 	}
 
-	contentStyle := m.renderer.NewStyle().
-		Padding(0, 2).
-		Width(min(150, m.Width-15))
+// 	contentStyle := m.renderer.NewStyle().
+// 		Padding(0, 2).
+// 		Width(min(150, m.Width-15))
 
-	middleContent := contentStyle.Render(viewContent)
+// 	middleContent := contentStyle.Render(viewContent)
 
-	return m.renderMainView(middleContent)
-}
+// 	return m.renderView(middleContent)
+// }

@@ -18,15 +18,16 @@ import (
 	"github.com/charmbracelet/wish/activeterm"
 	"github.com/charmbracelet/wish/bubbletea"
 	"github.com/charmbracelet/wish/logging"
-	"github.com/muesli/termenv"
 )
 
-func StartWishServer(host, port string) {
+func StartWishServer(host, port string, minHeight, minWidth int, renderer *lipgloss.Renderer) {
 	s, err := wish.NewServer(
 		wish.WithAddress(net.JoinHostPort(host, port)),
 		wish.WithHostKeyPath(".ssh/id_ed25519"),
 		wish.WithMiddleware(
-			bubbletea.Middleware(teaHandler),
+			bubbletea.Middleware(func(s ssh.Session) (tea.Model, []tea.ProgramOption) {
+				return teaHandler(minHeight, minWidth, s, renderer)
+			}),
 			activeterm.Middleware(),
 			logging.Middleware(),
 		),
@@ -56,16 +57,12 @@ func StartWishServer(host, port string) {
 	}
 }
 
-func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
+func teaHandler(minHeight, minWidth int, s ssh.Session, renderer *lipgloss.Renderer) (tea.Model, []tea.ProgramOption) {
 	pty, _, ok := s.Pty()
 	if !ok {
 		log.Error("No PTY requested")
 		return nil, nil
 	}
-
-	// Create a renderer for this specific SSH session with TrueColor
-	renderer := lipgloss.NewRenderer(s, termenv.WithColorCache(true))
-	renderer.SetColorProfile(termenv.TrueColor)
 
 	log.Info("New SSH session",
 		"user", s.User(),
@@ -76,10 +73,10 @@ func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	width := pty.Window.Width
 	height := pty.Window.Height
 	if width <= 0 {
-		width = 80
+		width = minWidth
 	}
 	if height <= 0 {
-		height = 24
+		height = minHeight
 	}
 
 	m := models.InitialModel(height, width, renderer)

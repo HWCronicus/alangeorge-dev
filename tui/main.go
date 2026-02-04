@@ -5,16 +5,25 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"github.com/HWCronicus/ssh-resume/src/models"
 	"github.com/HWCronicus/ssh-resume/src/server"
 	logger "github.com/HWCronicus/ssh-resume/src/utils"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/x/term"
 	"github.com/joho/godotenv"
+	"github.com/muesli/termenv"
 )
 
 type config struct {
-	port    string
-	sshPort string
-	host    string
+	port      string
+	sshPort   string
+	host      string
+	renderer  *lipgloss.Renderer
+	minHeight int
+	minWidth  int
 }
 
 func main() {
@@ -22,8 +31,10 @@ func main() {
 	godotenv.Load()
 
 	config := config{
-		sshPort: os.Getenv("SSH_PORT"),
-		host:    os.Getenv("HOST"),
+		sshPort:   os.Getenv("SSH_PORT"),
+		host:      os.Getenv("HOST"),
+		minHeight: 50,
+		minWidth:  150,
 	}
 	//Start logger
 	if err := logger.InitLogger(); err != nil {
@@ -32,33 +43,32 @@ func main() {
 	}
 	defer logger.CloseLogger()
 
+	config.renderer = lipgloss.NewRenderer(os.Stdout, termenv.WithColorCache(true))
+	config.renderer.SetColorProfile(termenv.TrueColor)
+
 	logger.LogInfo("Starting SSH Resume application")
 
 	logger.LogInfo(fmt.Sprintf("Starting wish servers on %s:%s", config.host, config.sshPort))
 
 	// Start both servers asynchronously
-	go server.StartWishServer(config.host, config.sshPort)
+	go server.StartWishServer(config.host, config.sshPort, config.minHeight, config.minWidth, config.renderer)
 	// Uncomment the following lines to run the TUI locally instead of via SSH
 	// This will start the TUI application directly in the terminal
 
-	/*
-		Give servers a moment to start
-		time.Sleep(500 * time.Microsecond)
-		width, height, err := term.GetSize(os.Stdout.Fd())
-		if err != nil {
-			width, height = 200, 50
-		}
-		logger.LogInfo(fmt.Sprintf("Terminal size: %dx%d", width, height))
-		p := tea.NewProgram(models.InitialModel(height, width), tea.WithAltScreen(), tea.WithMouseCellMotion())
+	time.Sleep(500 * time.Microsecond)
+	width, height, err := term.GetSize(os.Stdout.Fd())
+	if err != nil {
+		width, height = config.minWidth, config.minHeight
+	}
+	logger.LogInfo(fmt.Sprintf("Terminal size: %dx%d", width, height))
+	p := tea.NewProgram(models.InitialModel(height, width, config.renderer), tea.WithAltScreen(), tea.WithMouseCellMotion())
 
-		if _, err := p.Run(); err != nil {
-			logger.LogError("TUI application failed", err)
-			os.Exit(1)
-		}
+	if _, err := p.Run(); err != nil {
+		logger.LogError("TUI application failed", err)
+		os.Exit(1)
+	}
 
-		After TUI exits, keep the SSH server running
-		logger.LogInfo("TUI application closed, SSH server still running")
-	*/
+	logger.LogInfo("TUI application closed, SSH server still running")
 
 	// Wait for interrupt signal
 	sigChan := make(chan os.Signal, 1)
