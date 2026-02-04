@@ -5,14 +5,10 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
-	"github.com/HWCronicus/ssh-resume/src/models"
 	"github.com/HWCronicus/ssh-resume/src/server"
 	logger "github.com/HWCronicus/ssh-resume/src/utils"
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/x/term"
 	"github.com/joho/godotenv"
 	"github.com/muesli/termenv"
 )
@@ -55,20 +51,20 @@ func main() {
 	// Uncomment the following lines to run the TUI locally instead of via SSH
 	// This will start the TUI application directly in the terminal
 
-	time.Sleep(500 * time.Microsecond)
-	width, height, err := term.GetSize(os.Stdout.Fd())
-	if err != nil {
-		width, height = config.minWidth, config.minHeight
-	}
-	logger.LogInfo(fmt.Sprintf("Terminal size: %dx%d", width, height))
-	p := tea.NewProgram(models.InitialModel(height, width, config.renderer), tea.WithAltScreen(), tea.WithMouseCellMotion())
+	// time.Sleep(500 * time.Microsecond)
+	// terminalWidth, terminalHeight, err := term.GetSize(os.Stdout.Fd())
+	// if err != nil {
+	// 	logger.LogError("TUI Unable to get terminal size", err)
+	// 	os.Exit(1)
+	// }
+	// logger.LogInfo(fmt.Sprintf("Terminal size: %dx%d", terminalWidth, terminalHeight))
+	// p := tea.NewProgram(models.InitialModel(config.minHeight, config.minWidth, terminalHeight, terminalWidth, config.renderer), tea.WithAltScreen(), tea.WithMouseCellMotion())
+	// if _, err := p.Run(); err != nil {
+	// 	logger.LogError("TUI application failed", err)
+	// 	os.Exit(1)
+	// }
 
-	if _, err := p.Run(); err != nil {
-		logger.LogError("TUI application failed", err)
-		os.Exit(1)
-	}
-
-	logger.LogInfo("TUI application closed, SSH server still running")
+	// logger.LogInfo("TUI application closed, SSH server still running")
 
 	// Wait for interrupt signal
 	sigChan := make(chan os.Signal, 1)

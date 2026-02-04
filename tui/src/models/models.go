@@ -26,24 +26,24 @@ const (
 	contactInfoView
 )
 
-const (
-	minWidth  = 150
-	minHeight = 30
-)
+var tabs = []string{"About Me", "Skills", "Work Experience", "Projects", "Contact Info"}
 
 type splashTimeoutMsg struct{}
 
 type Model struct {
-	CurrentView   view
-	Width         int
-	Height        int
-	Cursor        int
-	TerminalWidth int
-	Viewport      viewport.Model
-	Ready         bool
-	AsciiArt      string
-	Animation     animations.Animation
-	renderer      *lipgloss.Renderer
+	Animation      animations.Animation
+	AsciiArt       string
+	CurrentView    view
+	Cursor         int
+	MinHeight      int
+	MinWidth       int
+	SetHeight      int
+	SetWidth       int
+	TerminalHeight int
+	TerminalWidth  int
+	Viewport       viewport.Model
+	Ready          bool
+	renderer       *lipgloss.Renderer
 }
 
 func (m Model) highlightColor() lipgloss.Color {
@@ -108,21 +108,24 @@ func (m Model) infoStyle() lipgloss.Style {
 		Padding(0, 1)
 }
 
-func InitialModel(height, width int, renderer *lipgloss.Renderer) Model {
+func InitialModel(minHeight, minWidth, terminalHeight, terminalWidth int, renderer *lipgloss.Renderer) Model {
 	asciiArt, err := os.ReadFile("assets/alan.txt")
 	if err != nil {
 		asciiArt = []byte("AlanGeorge.Dev")
 	}
 
 	return Model{
-		CurrentView:   splashView,
-		Cursor:        0,
-		Height:        height,
-		Width:         width,
-		TerminalWidth: width,
-		AsciiArt:      string(asciiArt),
-		Animation:     nil,
-		renderer:      renderer,
+		CurrentView:    splashView,
+		Cursor:         0,
+		MinHeight:      minHeight,
+		MinWidth:       minWidth,
+		SetHeight:      max(terminalHeight-40, minHeight),
+		SetWidth:       max(terminalWidth-40, minWidth),
+		TerminalHeight: terminalHeight,
+		TerminalWidth:  terminalWidth,
+		AsciiArt:       string(asciiArt),
+		Animation:      nil,
+		renderer:       renderer,
 	}
 }
 
@@ -139,7 +142,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case splashTimeoutMsg:
 		if m.CurrentView == splashView {
-			if m.TerminalWidth >= minWidth && m.Height >= minHeight {
+			if m.TerminalWidth >= m.MinWidth && m.TerminalHeight >= m.MinHeight {
 				if m.Animation != nil {
 					m.Animation.Update()
 				}
@@ -155,51 +158,55 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.loadViewportContent()
 
 	case tea.WindowSizeMsg:
-		oldWidth := m.TerminalWidth
-		oldHeight := m.Height
+		// oldWidth := m.TerminalWidth
+		// oldHeight := m.Height
 
+		// m.TerminalWidth = msg.Width
+		// m.Width = min(msg.Width, 150)
+		// m.Height = min(msg.Height, 50)
+
+		m.TerminalHeight = msg.Height
 		m.TerminalWidth = msg.Width
-		m.Width = min(msg.Width, 150)
-		m.Height = min(msg.Height, 50)
+		m.SetHeight = max(m.TerminalHeight, m.MinHeight)
+		m.SetWidth = max(m.TerminalWidth-40, m.MinWidth)
 
 		if m.CurrentView == splashView {
-			if m.TerminalWidth >= minWidth && m.Height >= minHeight {
-				if m.Animation == nil || oldWidth != m.TerminalWidth || oldHeight != m.Height {
-					config := animations.BeamTextConfig{
-						Width:                m.TerminalWidth,
-						Height:               m.Height,
-						Text:                 m.AsciiArt,
-						Auto:                 false,
-						Display:              true,
-						BeamRowSymbols:       []rune{'▂', '▁', '_'},
-						BeamColumnSymbols:    []rune{'▌', '▍', '▎', '▏'},
-						BeamDelay:            2,
-						BeamRowSpeedRange:    [2]int{20, 80},
-						BeamColumnSpeedRange: [2]int{15, 30},
-						BeamGradientStops:    []string{"#ffffff", "#ff7300", "#ff9933"},
-						BeamGradientSteps:    5,
-						BeamGradientFrames:   1,
-						FinalGradientStops:   []string{"#666666", "#ff7300", "#ff9933"},
-						FinalGradientSteps:   8,
-						FinalGradientFrames:  1,
-						FinalWipeSpeed:       3,
-					}
-					m.Animation = animations.NewBeamTextEffect(config)
+			if m.TerminalWidth >= m.MinWidth && m.TerminalHeight >= m.MinHeight && m.Animation == nil {
+				config := animations.BeamTextConfig{
+					Width:                m.TerminalWidth,
+					Height:               m.TerminalHeight,
+					Text:                 m.AsciiArt,
+					Auto:                 false,
+					Display:              true,
+					BeamRowSymbols:       []rune{'▂', '▁', '_'},
+					BeamColumnSymbols:    []rune{'▌', '▍', '▎', '▏'},
+					BeamDelay:            2,
+					BeamRowSpeedRange:    [2]int{20, 80},
+					BeamColumnSpeedRange: [2]int{15, 30},
+					BeamGradientStops:    []string{"#ffffff", "#ff7300", "#ff9933"},
+					BeamGradientSteps:    5,
+					BeamGradientFrames:   1,
+					FinalGradientStops:   []string{"#666666", "#ff7300", "#ff9933"},
+					FinalGradientSteps:   8,
+					FinalGradientFrames:  1,
+					FinalWipeSpeed:       3,
 				}
+				m.Animation = animations.NewBeamTextEffect(config)
+
 			}
 		}
 
 		if !m.Ready {
-			contentWidth := min(150, m.Width-20)
+			contentWidth := m.SetWidth - 20
 			viewportWidth := contentWidth - 4
-			viewportHeight := m.Height - 30
+			viewportHeight := m.SetHeight - 30
 			m.Viewport = viewport.New(viewportWidth, viewportHeight)
 			m.Viewport.YPosition = 0
 			m.Ready = true
 		} else {
-			contentWidth := min(150, m.Width-20)
+			contentWidth := m.SetWidth - 20
 			viewportWidth := contentWidth - 4
-			viewportHeight := m.Height - 30
+			viewportHeight := m.SetHeight - 30
 			m.Viewport.Width = viewportWidth
 			m.Viewport.Height = viewportHeight
 		}
@@ -208,6 +215,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		if m.CurrentView == splashView {
 			m.CurrentView = aboutMeView
+			m.Cursor = 0
 			m.loadViewportContent()
 			return m, nil
 		}
@@ -227,7 +235,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case "enter":
-			m.CurrentView = view(m.Cursor + 2)
+			m.CurrentView = view(m.Cursor + 1)
 			m.loadViewportContent()
 
 		case "b", "backspace", "esc":
@@ -240,7 +248,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			selection := int(msg.String()[0] - '1')
 			if selection >= 0 && selection < 5 {
 				m.Cursor = selection
-				m.CurrentView = view(selection + 2)
+				m.CurrentView = view(selection + 1)
 				m.loadViewportContent()
 			}
 		}
@@ -255,7 +263,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() string {
-	if m.TerminalWidth < minWidth || m.Height < minHeight {
+	if m.TerminalWidth < m.MinWidth || m.TerminalHeight < m.MinHeight {
 		return m.renderResizeMessage()
 	}
 
@@ -274,7 +282,7 @@ func (m Model) renderSplashScreen() string {
 			AlignHorizontal(lipgloss.Center).
 			AlignVertical(lipgloss.Center).
 			Width(m.TerminalWidth).
-			Height(m.Height)
+			Height(m.TerminalHeight)
 		return splashStyle.Render(string(m.AsciiArt))
 	}
 
@@ -291,7 +299,7 @@ func (m Model) renderSplashScreen() string {
 
 	splashStyle := m.renderer.NewStyle().
 		Width(m.TerminalWidth).
-		Height(m.Height)
+		Height(m.TerminalHeight)
 
 	return splashStyle.Render(combined)
 }
@@ -302,15 +310,15 @@ func (m Model) renderResizeMessage() string {
 		Foreground(lipgloss.Color("208")).
 		Align(lipgloss.Center).
 		Width(m.TerminalWidth).
-		Height(m.Height)
+		Height(m.TerminalHeight)
 
 	message := fmt.Sprintf(
 		"Your Terminal window is too small.\n\n"+
 			"For an optimal experience, please resize your terminal window.\n\n"+
 			"Current size: %dx%d\n"+
 			"Minimum size: %dx%d\n\n",
-		m.TerminalWidth, m.Height,
-		minWidth, minHeight,
+		m.TerminalWidth, m.TerminalHeight,
+		m.MinWidth, m.MinHeight,
 	)
 
 	return messageStyle.Render(message)
@@ -321,8 +329,6 @@ func (m Model) RenderMainTitle() string {
 }
 
 func (m Model) RenderTabs(content string) string {
-	tabs := []string{"About Me", "Skills", "Work Experience", "Projects", "Contact Info"}
-
 	var renderedTabs []string
 	for i, t := range tabs {
 		var style lipgloss.Style
@@ -334,7 +340,7 @@ func (m Model) RenderTabs(content string) string {
 		renderedTabs = append(renderedTabs, style.Render(t))
 	}
 
-	contentWidth := min(150, m.Width-20)
+	contentWidth := m.SetWidth - 20
 	totalWidth := contentWidth + m.windowStyle().GetHorizontalFrameSize() - 4
 
 	tabRow := lipgloss.JoinHorizontal(lipgloss.Top, renderedTabs...)
@@ -378,7 +384,7 @@ func (m Model) RenderHelp() string {
 }
 
 func (m Model) FooterView() string {
-	contentWidth := min(150, m.Width-20)
+	contentWidth := m.SetWidth - 20
 
 	info := m.infoStyle().Render(fmt.Sprintf("%3.f%%", m.Viewport.ScrollPercent()*100))
 	infoWidth := lipgloss.Width(info)
@@ -405,7 +411,7 @@ func (m Model) FooterView() string {
 }
 
 func (m Model) RenderView() string {
-	if m.TerminalWidth < minWidth || m.Height < minHeight {
+	if m.TerminalWidth < m.MinWidth || m.TerminalHeight < m.MinHeight {
 		return m.renderResizeMessage()
 	}
 
@@ -424,7 +430,7 @@ func (m Model) RenderView() string {
 
 	contentStyle := m.renderer.NewStyle().
 		Padding(0, 2).
-		Width(min(150, m.Width-15))
+		Width(m.SetWidth - 15)
 
 	middleContent := contentStyle.Render(viewContent)
 
@@ -437,11 +443,11 @@ func (m Model) RenderView() string {
 	topContent := fmt.Sprintf("%s\n\n%s\n\n", title, about)
 
 	top := m.renderer.NewStyle().
-		Width(m.Width - 8).
+		Width(m.SetWidth - 8).
 		AlignHorizontal(lipgloss.Center).
 		Render(topContent)
 
-	availableHeight := m.Height - 8
+	availableHeight := m.SetHeight - 8
 	topContentHeight := lipgloss.Height(topContent)
 	helpHeight := lipgloss.Height(help)
 	spacerHeight := availableHeight - topContentHeight - helpHeight + 4
@@ -451,23 +457,24 @@ func (m Model) RenderView() string {
 
 	middle := m.renderer.NewStyle().
 		Height(spacerHeight - 10).
-		Width(m.Width - 8).
+		Width(m.SetWidth - 8).
 		PaddingLeft(3).
 		AlignHorizontal(lipgloss.Center).
 		Render(tabs)
 
 	bottom := m.renderer.NewStyle().
-		Width(m.Width - 8).
+		Width(m.SetWidth - 8).
 		AlignHorizontal(lipgloss.Center).
 		Render(help)
 
 	joinedVert := lipgloss.JoinVertical(lipgloss.Top, top, middle, bottom)
 
-	bordered := gradient.RenderGradientBorder("#ff7300", "#666666", joinedVert, m.Width, m.Height, m.renderer)
+	bordered := gradient.RenderGradientBorder("#ff7300", "#666666", joinedVert, m.SetWidth, m.SetHeight, m.renderer)
 
 	return m.renderer.NewStyle().
 		Width(m.TerminalWidth).
 		AlignHorizontal(lipgloss.Center).
+		AlignVertical(lipgloss.Center).
 		Render(bordered)
 }
 
@@ -500,7 +507,7 @@ func (m *Model) loadViewportContent() tea.Cmd {
 	}
 
 	renderer, err := glamour.NewTermRenderer(
-		glamour.WithStylePath("dark"),
+		glamour.WithStylesFromJSONFile("assets/md_styles.json"),
 		glamour.WithWordWrap(m.Viewport.Width-2),
 		glamour.WithColorProfile(termenv.TrueColor),
 	)
@@ -519,27 +526,3 @@ func (m *Model) loadViewportContent() tea.Cmd {
 	m.Viewport.GotoTop()
 	return nil
 }
-
-// func (m Model) RenderDetailView(titleText, descriptionText string) string {
-// 	if m.TerminalWidth < minWidth || m.Height < minHeight {
-// 		return m.renderResizeMessage()
-// 	}
-
-// 	var viewContent string
-// 	if m.Ready {
-// 		viewContent = m.Viewport.View()
-// 		if viewContent == "" {
-// 			viewContent = "Press a number key (1-5) or use arrow keys and Enter to select a section."
-// 		}
-// 	} else {
-// 		viewContent = "Initializing..."
-// 	}
-
-// 	contentStyle := m.renderer.NewStyle().
-// 		Padding(0, 2).
-// 		Width(min(150, m.Width-15))
-
-// 	middleContent := contentStyle.Render(viewContent)
-
-// 	return m.renderView(middleContent)
-// }

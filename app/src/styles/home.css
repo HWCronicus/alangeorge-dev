@@ -132,7 +132,7 @@ button[data-tooltip]:hover::after {
 
 .modal-content {
   position: relative;
-  width: 90vw;
+  width: 80vw;
   height: 85vh;
   background: #1e1e1e;
   border-radius: 12px;

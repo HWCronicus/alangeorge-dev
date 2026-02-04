@@ -39,8 +39,8 @@ export default function Terminal() {
         brightCyan: "#29b8db",
         brightWhite: "#e5e5e5",
       },
-      cols: 150,
-      rows: 50,
+      cols: 80,
+      rows: 40,
     });
 
     const fitAddon = new FitAddon();

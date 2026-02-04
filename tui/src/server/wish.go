@@ -70,15 +70,15 @@ func teaHandler(minHeight, minWidth int, s ssh.Session, renderer *lipgloss.Rende
 		"height", pty.Window.Height,
 	)
 
-	width := pty.Window.Width
-	height := pty.Window.Height
-	if width <= 0 {
-		width = minWidth
+	terminalWidth := pty.Window.Width
+	terminalHeight := pty.Window.Height
+	if terminalWidth <= 0 {
+		terminalWidth = minWidth
 	}
-	if height <= 0 {
-		height = minHeight
+	if terminalHeight <= 0 {
+		terminalHeight = minHeight
 	}
 
-	m := models.InitialModel(height, width, renderer)
+	m := models.InitialModel(minHeight, minWidth, terminalHeight, terminalWidth, renderer)
 	return m, []tea.ProgramOption{tea.WithAltScreen(), tea.WithMouseCellMotion()}
 }
