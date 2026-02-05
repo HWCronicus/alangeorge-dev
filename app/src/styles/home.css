@@ -25,7 +25,65 @@
   margin: 0;
 }
 
-.buttons {
+.codeBlock {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 5px;
+  font-family: "CascadiaCode", monospace;
+  font-size: 18px;
+  font-weight: 600;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 136, 0, 0.1),
+    rgba(255, 115, 0, 0.15)
+  );
+  border: 2px solid rgba(255, 136, 0, 0.5);
+  border-radius: 10px;
+  color: #ff8800;
+  white-space: nowrap;
+  box-shadow:
+    0 4px 15px rgba(255, 136, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.copyButton {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 4px;
+  background: rgba(255, 136, 0, 0.2);
+  border: 1px solid rgba(255, 136, 0, 0.6);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(5px);
+}
+
+.copyButton:hover {
+  background: rgba(255, 136, 0, 0.4);
+  border-color: #ff8800;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(255, 136, 0, 0.4);
+}
+
+.copyButton:active {
+  transform: scale(0.95);
+}
+
+.copyButton.copied {
+  width: 30px;
+  height: 30px;
+  background: rgba(76, 175, 80, 0.3);
+  border-color: #4caf50;
+}
+
+.navButtons {
   position: absolute;
   bottom: 40px;
   left: 50%;
@@ -35,7 +93,7 @@
   z-index: 10;
 }
 
-button {
+.navButton {
   padding: 15px 30px;
   font-family: "Fira Code", monospace;
   font-size: 16px;
@@ -49,7 +107,7 @@ button {
   backdrop-filter: blur(10px);
 }
 
-button:hover {
+.navButton:hover {
   background: #ff8800;
   color: #1a1a1a;
   transform: translateY(-2px);

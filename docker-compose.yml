@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: alangeorge-dev-app
+    container_name: alangeorge-dev
     build:
       context: .
       dockerfile: dockerfile
