@@ -226,3 +226,180 @@ button[data-tooltip]:hover::after {
   transform: none;
   box-shadow: none;
 }
+
+@media (max-width: 1024px) {
+  .about {
+    bottom: 120px;
+    font-size: 16px;
+    max-width: 700px;
+    gap: 12px;
+  }
+
+  .codeBlock {
+    font-size: 16px;
+  }
+
+  .navButton {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about {
+    bottom: 100px;
+    font-size: 14px;
+    max-width: 90%;
+    gap: 10px;
+    padding: 0 15px;
+  }
+
+  .about p {
+    line-height: 1.4;
+  }
+
+  .codeBlock {
+    font-size: 14px;
+    padding: 4px 4px;
+  }
+
+  .copyButton {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+  }
+
+  .copyButton.copied {
+    width: 26px;
+    height: 26px;
+  }
+
+  .navButtons {
+    bottom: 30px;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0 15px;
+  }
+
+  .navButton {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .modal-content {
+    width: 90vw;
+    height: 90vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .about {
+    bottom: 140px;
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  .codeBlock {
+    font-size: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .copyButton {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+
+  .copyButton.copied {
+    width: 24px;
+    height: 24px;
+  }
+
+  .navButtons {
+    bottom: 20px;
+    gap: 10px;
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .navButton {
+    flex: 1;
+    min-width: 90px;
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+
+  /* Adjust tooltip for mobile */
+  button[data-tooltip]::before {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  button[data-tooltip]::after {
+    border-width: 6px;
+  }
+
+  .modal-content {
+    width: 95vw;
+    height: 95vh;
+  }
+}
+
+/* @media (max-height: 1000px) {
+  .about {
+    bottom: 80px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .about p {
+    margin: 2px 0;
+  }
+
+  .navButtons {
+    bottom: 15px;
+    gap: 8px;
+  }
+
+  .navButton {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+} */
+
+/* For very small screens or landscape mobile */
+@media (max-height: 600px) {
+  .about {
+    bottom: 80px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .about p {
+    margin: 2px 0;
+  }
+
+  .navButtons {
+    bottom: 15px;
+    gap: 8px;
+  }
+
+  .navButton {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+/* For extra small heights */
+@media (max-height: 500px) {
+  .about {
+    display: none;
+  }
+
+  .navButtons {
+    bottom: 20%;
+    transform: translate(-50%, 50%);
+  }
+}

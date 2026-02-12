@@ -29,8 +29,8 @@ func main() {
 	config := config{
 		sshPort:   os.Getenv("SSH_PORT"),
 		host:      os.Getenv("HOST"),
-		minHeight: 50,
-		minWidth:  150,
+		minHeight: 30,
+		minWidth:  120,
 	}
 	//Start logger
 	if err := logger.InitLogger(); err != nil {

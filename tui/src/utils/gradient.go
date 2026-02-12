@@ -38,11 +38,11 @@ func RenderGradientBorder(colorA, colorB, content string, width, height int, ren
 	}
 
 	innerWidth := width - 2
+	innerHeight := height - 2
 
 	lines := renderer.NewStyle().
 		Width(innerWidth).
-		Height(height-2).
-		Padding(1, 2).
+		Height(innerHeight).
 		Render(content)
 
 	contentLines := strings.Split(lines, "\n")
