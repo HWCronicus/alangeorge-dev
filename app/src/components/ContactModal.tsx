@@ -45,6 +45,7 @@ export default function ContactModal({ onClose }: ContactModalProps) {
 
   const handleUseAI = () => {
     // Placeholder for AI feature
+
     console.log("AI feature coming soon");
   };
 

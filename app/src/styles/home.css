@@ -130,7 +130,6 @@ button[data-tooltip]::after {
   pointer-events: none;
 }
 
-/* Tooltip bubble */
 button[data-tooltip]::before {
   content: attr(data-tooltip);
   bottom: calc(100% + 15px);
@@ -146,7 +145,6 @@ button[data-tooltip]::before {
   backdrop-filter: blur(10px);
 }
 
-/* Tooltip tail/arrow */
 button[data-tooltip]::after {
   content: "";
   bottom: calc(100% + 3px);
@@ -154,12 +152,10 @@ button[data-tooltip]::after {
   border-top-color: #ff8800;
 }
 
-/* Inner arrow to match background */
 button[data-tooltip]:hover::after {
   filter: drop-shadow(0 2px 0 rgba(30, 30, 30, 0.95));
 }
 
-/* Show on hover */
 button[data-tooltip]:hover::before,
 button[data-tooltip]:hover::after {
   opacity: 1;
@@ -188,7 +184,7 @@ button[data-tooltip]:hover::after {
   z-index: 100;
 }
 
-.modal-content {
+.terminal-modal-content {
   position: relative;
   width: 80vw;
   height: 85vh;
@@ -347,29 +343,24 @@ button[data-tooltip]:hover::after {
   }
 }
 
-/* @media (max-height: 1000px) {
+@media (max-height: 1000px) {
   .about {
-    bottom: 80px;
-    font-size: 12px;
-    gap: 6px;
+    bottom: 120px;
+    font-size: 16px;
+    max-width: 700px;
+    gap: 12px;
   }
 
-  .about p {
-    margin: 2px 0;
-  }
-
-  .navButtons {
-    bottom: 15px;
-    gap: 8px;
+  .codeBlock {
+    font-size: 16px;
   }
 
   .navButton {
-    padding: 8px 12px;
-    font-size: 12px;
+    padding: 12px 24px;
+    font-size: 15px;
   }
-} */
+}
 
-/* For very small screens or landscape mobile */
 @media (max-height: 600px) {
   .about {
     bottom: 80px;
@@ -392,7 +383,6 @@ button[data-tooltip]:hover::after {
   }
 }
 
-/* For extra small heights */
 @media (max-height: 500px) {
   .about {
     display: none;

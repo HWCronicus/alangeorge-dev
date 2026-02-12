@@ -31,9 +31,10 @@ export default function Home() {
       <ThreeScene />
       <div className="about">
         <p>
-          This is just a landing page for my personal website,{" "}
-          <strong>AlanGeorge.Dev</strong>. I'm Alan George, a software developer
-          specializing in Go and web development.
+          <strong>AlanGeorge.Dev</strong>. I'm Alan, a software developer
+          specializing in Web Application Development using
+          TypeScript/JavaScript, Go, and C#/.NET using many different frameworks
+          and libraries.
         </p>
         <p>
           The meat and potatoes of this project is an interactive SSH resume
@@ -44,7 +45,6 @@ export default function Home() {
           <button
             className={`copyButton ${copied ? "copied" : ""}`}
             onClick={handleCopy}
-            // title={copied ? "Copied!" : "Copy to clipboard"}
             data-tooltip={copied ? "Copied!" : "Copy to clipboard"}
           >
             {copied ? "✓" : "📋"}
@@ -81,7 +81,10 @@ export default function Home() {
 
       {isTerminalOpen && (
         <div className="modal-overlay" onClick={() => setIsTerminalOpen(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="terminal-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               className="modal-close"
               onClick={() => setIsTerminalOpen(false)}
