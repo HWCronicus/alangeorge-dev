@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import "../styles/contact-modal.css";
 
 interface ContactModalProps {
@@ -23,10 +24,7 @@ const initialFormData: FormData = {
 
 export default function ContactModal({ onClose }: ContactModalProps) {
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [status, setStatus] = useState<
-    "idle" | "sending" | "success" | "error"
-  >("idle");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -39,27 +37,26 @@ export default function ContactModal({ onClose }: ContactModalProps) {
 
   const handleClear = () => {
     setFormData(initialFormData);
-    setStatus("idle");
-    setErrorMessage("");
+    toast.success("Form cleared");
   };
 
   const handleUseAI = () => {
     // Placeholder for AI feature
-
-    console.log("AI feature coming soon");
+    toast.success("AI feature coming soon", {
+      icon: "🤖",
+    });
   };
 
   const handleSend = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.message) {
-      setStatus("error");
-      setErrorMessage("Please fill in all required fields.");
+      toast.error("Please fill in all required fields");
       return;
     }
 
-    setStatus("sending");
-    setErrorMessage("");
+    setIsSending(true);
+    const sendingToast = toast.loading("Sending your message...");
 
     try {
       const response = await fetch("/email", {
@@ -75,16 +72,17 @@ export default function ContactModal({ onClose }: ContactModalProps) {
         throw new Error(data.error || "Failed to send email");
       }
 
-      setStatus("success");
+      toast.success("Message sent successfully!", { id: sendingToast });
       setTimeout(() => {
         handleClear();
         onClose();
-      }, 2000);
+      }, 1500);
     } catch (error) {
-      setStatus("error");
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to send email",
-      );
+      const errorMsg =
+        error instanceof Error ? error.message : "Failed to send email";
+      toast.error(errorMsg, { id: sendingToast });
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -163,11 +161,6 @@ export default function ContactModal({ onClose }: ContactModalProps) {
             />
           </div>
 
-          {status === "error" && <p className="form-error">{errorMessage}</p>}
-          {status === "success" && (
-            <p className="form-success">Message sent successfully!</p>
-          )}
-
           <div className="form-buttons">
             <button type="button" className="btn-clear" onClick={handleClear}>
               Clear
@@ -175,12 +168,8 @@ export default function ContactModal({ onClose }: ContactModalProps) {
             <button type="button" className="btn-ai" onClick={handleUseAI}>
               Use AI
             </button>
-            <button
-              type="submit"
-              className="btn-send"
-              disabled={status === "sending"}
-            >
-              {status === "sending" ? "Sending..." : "Send"}
+            <button type="submit" className="btn-send" disabled={isSending}>
+              {isSending ? "Sending..." : "Send"}
             </button>
           </div>
         </form>
