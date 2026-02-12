@@ -20,13 +20,13 @@ import (
 	"github.com/charmbracelet/wish/logging"
 )
 
-func StartWishServer(host, port string, minHeight, minWidth int, renderer *lipgloss.Renderer) {
+func StartWishServer(host, port string, minHeight, minWidth, maxHeight, maxWidth int, renderer *lipgloss.Renderer) {
 	s, err := wish.NewServer(
 		wish.WithAddress(net.JoinHostPort(host, port)),
 		wish.WithHostKeyPath(".ssh/id_ed25519"),
 		wish.WithMiddleware(
 			bubbletea.Middleware(func(s ssh.Session) (tea.Model, []tea.ProgramOption) {
-				return teaHandler(minHeight, minWidth, s, renderer)
+				return teaHandler(minHeight, minWidth, maxHeight, maxWidth, s, renderer)
 			}),
 			activeterm.Middleware(),
 			logging.Middleware(),
@@ -57,7 +57,7 @@ func StartWishServer(host, port string, minHeight, minWidth int, renderer *lipgl
 	}
 }
 
-func teaHandler(minHeight, minWidth int, s ssh.Session, renderer *lipgloss.Renderer) (tea.Model, []tea.ProgramOption) {
+func teaHandler(minHeight, minWidth, maxHeight, maxWidth int, s ssh.Session, renderer *lipgloss.Renderer) (tea.Model, []tea.ProgramOption) {
 	pty, _, ok := s.Pty()
 	if !ok {
 		log.Error("No PTY requested")
@@ -79,6 +79,6 @@ func teaHandler(minHeight, minWidth int, s ssh.Session, renderer *lipgloss.Rende
 		terminalHeight = minHeight
 	}
 
-	m := models.InitialModel(minHeight, minWidth, terminalHeight, terminalWidth, renderer)
+	m := models.InitialModel(minHeight, minWidth, maxHeight, maxWidth, terminalHeight, terminalWidth, renderer)
 	return m, []tea.ProgramOption{tea.WithAltScreen(), tea.WithMouseCellMotion()}
 }

@@ -20,6 +20,8 @@ type config struct {
 	renderer  *lipgloss.Renderer
 	minHeight int
 	minWidth  int
+	maxHeight int
+	maxWidth  int
 }
 
 func main() {
@@ -31,6 +33,8 @@ func main() {
 		host:      os.Getenv("HOST"),
 		minHeight: 30,
 		minWidth:  120,
+		maxHeight: 50,
+		maxWidth:  200,
 	}
 	//Start logger
 	if err := logger.InitLogger(); err != nil {
@@ -47,7 +51,7 @@ func main() {
 	logger.LogInfo(fmt.Sprintf("Starting wish servers on %s:%s", config.host, config.sshPort))
 
 	// Start both servers asynchronously
-	go server.StartWishServer(config.host, config.sshPort, config.minHeight, config.minWidth, config.renderer)
+	go server.StartWishServer(config.host, config.sshPort, config.minHeight, config.minWidth, config.maxHeight, config.maxWidth, config.renderer)
 	// Uncomment the following lines to run the TUI locally instead of via SSH
 	// This will start the TUI application directly in the terminal
 
@@ -58,7 +62,7 @@ func main() {
 	// 	os.Exit(1)
 	// }
 	// logger.LogInfo(fmt.Sprintf("Terminal size: %dx%d", terminalWidth, terminalHeight))
-	// p := tea.NewProgram(models.InitialModel(config.minHeight, config.minWidth, terminalHeight, terminalWidth, config.renderer), tea.WithAltScreen(), tea.WithMouseCellMotion())
+	// p := tea.NewProgram(models.InitialModel(config.minHeight, config.minWidth, config.maxHeight, config.maxWidth, terminalHeight, terminalWidth, config.renderer), tea.WithAltScreen(), tea.WithMouseCellMotion())
 	// if _, err := p.Run(); err != nil {
 	// 	logger.LogError("TUI application failed", err)
 	// 	os.Exit(1)

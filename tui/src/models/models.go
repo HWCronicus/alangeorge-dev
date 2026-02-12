@@ -31,16 +31,18 @@ var tabs = []string{"About Me", "Skills", "Work Experience", "Projects", "Contac
 type splashTimeoutMsg struct{}
 
 type Model struct {
-	Animation      animations.Animation
-	CurrentView    view
-	Cursor         int
-	MinHeight      int
-	MinWidth       int
-	SetHeight      int
-	SetWidth       int
-	ContentWidth   int
-	ContentHeight  int
-	SplashAsciiArt string
+	Animation     animations.Animation
+	CurrentView   view
+	Cursor        int
+	MaxHeight     int
+	MaxWidth      int
+	MinHeight     int
+	MinWidth      int
+	SetHeight     int
+	SetWidth      int
+	ContentWidth  int
+	ContentHeight int
+	// SplashAsciiArt string
 	TerminalHeight int
 	TerminalWidth  int
 	TitleAsciiArt  string
@@ -111,29 +113,29 @@ func (m Model) infoStyle() lipgloss.Style {
 		BorderForeground(m.highlightColor())
 }
 
-func InitialModel(minHeight, minWidth, terminalHeight, terminalWidth int, renderer *lipgloss.Renderer) Model {
+func InitialModel(minHeight, minWidth, maxHeight, maxWidth, terminalHeight, terminalWidth int, renderer *lipgloss.Renderer) Model {
 	titleAsciiArt, err := os.ReadFile("assets/alan.txt")
 	if err != nil {
 		titleAsciiArt = []byte("AlanGeorge.Dev")
 	}
-	splashAsciiArt, err := os.ReadFile("assets/alan_splash.txt")
-	if err != nil {
-		splashAsciiArt = []byte("Welcome to AlanGeorge.Dev")
-	}
+	// splashAsciiArt, err := os.ReadFile("assets/alan_splash.txt")
+	// if err != nil {
+	// 	splashAsciiArt = []byte("Welcome to AlanGeorge.Dev")
+	// }
 
 	return Model{
 		CurrentView:    splashView,
 		Cursor:         0,
 		MinHeight:      minHeight,
 		MinWidth:       minWidth,
-		SetHeight:      max(terminalHeight, minHeight),
-		SetWidth:       max(terminalWidth, minWidth),
+		MaxHeight:      maxHeight,
+		MaxWidth:       maxWidth,
 		TerminalHeight: terminalHeight,
 		TerminalWidth:  terminalWidth,
-		SplashAsciiArt: string(splashAsciiArt),
-		TitleAsciiArt:  string(titleAsciiArt),
-		Animation:      nil,
-		renderer:       renderer,
+		// SplashAsciiArt: string(splashAsciiArt),
+		TitleAsciiArt: string(titleAsciiArt),
+		Animation:     nil,
+		renderer:      renderer,
 	}
 }
 
@@ -168,15 +170,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.TerminalHeight = msg.Height
 		m.TerminalWidth = msg.Width
-		m.SetHeight = max(m.TerminalHeight, m.MinHeight)
-		m.SetWidth = max(m.TerminalWidth, m.MinWidth)
+		m.SetHeight = min(m.TerminalHeight, m.MaxHeight)
+		m.SetWidth = min(m.TerminalWidth, m.MaxWidth)
 
 		if m.CurrentView == splashView {
 			if m.TerminalWidth >= m.MinWidth && m.TerminalHeight >= m.MinHeight && m.Animation == nil {
 				config := animations.BeamTextConfig{
 					Width:                m.TerminalWidth,
 					Height:               m.TerminalHeight,
-					Text:                 m.SplashAsciiArt,
+					Text:                 m.TitleAsciiArt,
 					Auto:                 false,
 					Display:              true,
 					BeamRowSymbols:       []rune{'▂', '▁', '_'},
@@ -223,32 +225,32 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 
-		case "left", "h":
-			if m.Cursor > 0 {
-				m.Cursor--
+		case "left":
+			if m.CurrentView != splashView {
+				if m.Cursor > 0 {
+					m.Cursor--
+				}
 			}
 
-		case "right", "l":
-			if m.Cursor < 4 {
-				m.Cursor++
+		case "right":
+			if m.CurrentView != splashView {
+				if m.Cursor < 4 {
+					m.Cursor++
+				}
 			}
 
 		case "enter":
 			m.CurrentView = view(m.Cursor + 1)
 			m.loadViewportContent()
 
-		case "b", "backspace", "esc":
-			if m.CurrentView != aboutMeView {
-				m.CurrentView = aboutMeView
-				m.loadViewportContent()
-			}
-
 		case "1", "2", "3", "4", "5":
-			selection := int(msg.String()[0] - '1')
-			if selection >= 0 && selection < 5 {
-				m.Cursor = selection
-				m.CurrentView = view(selection + 1)
-				m.loadViewportContent()
+			if m.CurrentView != splashView {
+				selection := int(msg.String()[0] - '1')
+				if selection >= 0 && selection < 5 {
+					m.Cursor = selection
+					m.CurrentView = view(selection + 1)
+					m.loadViewportContent()
+				}
 			}
 		}
 	}
@@ -282,7 +284,7 @@ func (m Model) renderSplashScreen() string {
 			AlignVertical(lipgloss.Center).
 			Width(m.TerminalWidth).
 			Height(m.TerminalHeight)
-		return splashStyle.Render(string(m.SplashAsciiArt))
+		return splashStyle.Render(string(m.TitleAsciiArt))
 	}
 
 	animationOutput := m.Animation.Render()
@@ -413,7 +415,7 @@ func (m Model) RenderView() string {
 	}
 
 	title := m.RenderMainTitle()
-	about := m.aboutStyle().Render("Welcome to Terminal based version of AlanGeorge.Dev, navigate through the sections to learn more about me.")
+	about := m.aboutStyle().Render("Welcome to AlanGeorge.Dev Terminal Interface, navigate through the sections to learn more about me.")
 
 	var viewContent string
 	if m.Ready {
@@ -443,16 +445,7 @@ func (m Model) RenderView() string {
 		AlignHorizontal(lipgloss.Center).
 		Render(topContent)
 
-	availableHeight := m.SetHeight
-	topContentHeight := lipgloss.Height(topContent)
-	helpHeight := lipgloss.Height(help)
-	spacerHeight := availableHeight - topContentHeight - helpHeight - 4
-	if spacerHeight < 0 {
-		spacerHeight = 0
-	}
-
 	middle := m.renderer.NewStyle().
-		Height(spacerHeight).
 		Width(m.SetWidth - 2).
 		AlignHorizontal(lipgloss.Center).
 		Render(tabs)
@@ -468,6 +461,7 @@ func (m Model) RenderView() string {
 
 	return m.renderer.NewStyle().
 		Width(m.TerminalWidth).
+		Height(m.TerminalHeight).
 		AlignHorizontal(lipgloss.Center).
 		AlignVertical(lipgloss.Center).
 		Render(bordered)
