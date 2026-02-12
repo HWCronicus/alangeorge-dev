@@ -47,7 +47,7 @@ export default function ContactModal({ onClose }: ContactModalProps) {
     });
   };
 
-  const handleSend = async (e: React.SubmitEvent) => {
+  const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.message) {
