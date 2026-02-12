@@ -57,7 +57,7 @@ export default function Terminal() {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     let wsUrl = `${protocol}//${window.location.host}/ws`;
     if (import.meta.env.DEV) {
-      wsUrl = "ws://localhost:8080/ws";
+      wsUrl = "ws://localhost:8282/ws";
     }
     console.log("Connecting to WebSocket at", wsUrl);
     let ws: WebSocket;

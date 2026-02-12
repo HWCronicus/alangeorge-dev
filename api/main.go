@@ -43,7 +43,7 @@ func main() {
 	})
 
 	if config.port == "" {
-		config.port = "8080"
+		config.port = "8282"
 	}
 
 	log.Println("Starting HTTP server on " + config.host + ":" + config.port)

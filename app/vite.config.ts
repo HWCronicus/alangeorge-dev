@@ -9,8 +9,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/email": "http://localhost:8080",
+      "/email": "http://localhost:8282",
     },
   },
 });
-

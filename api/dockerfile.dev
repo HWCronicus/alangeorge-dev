@@ -18,7 +18,7 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8282
 
 # Use go run for hot reloading (requires manual restart, but changes are reflected)
 CMD ["go", "run", "."]

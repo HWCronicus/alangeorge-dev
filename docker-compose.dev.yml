@@ -6,7 +6,7 @@ services:
       context: ./api
       dockerfile: dockerfile.dev
     ports:
-      - "8080:8080"
+      - "8282:8282"
     volumes:
       - ./api:/app
       - go_cache_api:/go/pkg/mod
