@@ -58,9 +58,19 @@ LinkedIn: [in/alan-e-george/](https://www.linkedin.com/in/alan-e-george/)
 
 ### Work History
 
+**Owner & Lead Developer**  
+**SSouth Swell Software** _Orange Park, FL_
+July 2022 - Jan 2025
+
+- Founded and operated a web development company delivering full-stack solutions for clients, handling everything from architecture and development to deployment and client management.
+- Build production web applications using React and Next.js on the frontend, and Node.js (NestJS/Express) & Go for the backend, with PostgreSQL for data persistence.
+- Design and ship end-to-end systems spanning frontend UI, REST APIs, and database schema/management.
+- Manage the full project lifecycle, from gathering client requirements to technical planning, implementation, and ongoing maintenance.
+- Leveraged AI coding harnesses (OpenCode, Claude, Copilot) to accelerate full-stack development, utilizing online LLMs for complex problem-solving and locally deployed LLMs
+
 **Full Stack Web Developer**  
 **SimX** _Remote_  
-July 2022 - Nov 2025
+July 2022 - Jan 2025
 
 - Orchestrated the development of 4 robust APIs from scratch utilizing Typescript and Node.JS, interfacing with both SQL and No-SQL databases; maintained 99.9% uptime and availability.
 - Engineered data migration scripts handling over one hundred thousand records between databases securely with zero downtime, allowing seamless updates that increased database integrity when integrating legacy systems into modern architectures.
