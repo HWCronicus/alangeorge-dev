@@ -42,8 +42,9 @@ COPY --from=go-builder /app/tui/content/ ./content/
 # Copy frontend static files
 COPY --from=frontend-builder /app/dist ./static
 
-# Generate SSH host key at runtime instead of build time
-RUN mkdir -p .ssh
+# Host key is created/loaded at runtime by the entrypoint script
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh && mkdir -p .ssh
 
 EXPOSE 8282 42069
-CMD ["sh", "-c", "[ ! -f .ssh/id_ed25519 ] && ssh-keygen -t ed25519 -f .ssh/id_ed25519 -N '' ; ./server & ./tui & wait"]
+CMD ["./entrypoint.sh"]
