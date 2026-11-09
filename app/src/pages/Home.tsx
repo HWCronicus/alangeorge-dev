@@ -31,14 +31,15 @@ export default function Home() {
       <ThreeScene />
       <div className="about">
         <p>
-          <strong>AlanGeorge.Dev</strong>. I'm Alan, a software developer
-          specializing in Web Application Development using
-          TypeScript/JavaScript, Go, and C#/.NET using many different frameworks
-          and libraries.
+          <strong>AlanGeorge.Dev</strong>. I’m Alan, a software developer
+          specializing in web application development. I work with
+          TypeScript/JavaScript, Go, and C#/.NET, along with a variety of
+          frameworks and libraries.
         </p>
         <p>
-          The meat and potatoes of this project is an interactive SSH resume
-          built with Go using BubbleTea and Wish. Available at:{" "}
+          The centerpiece of this project is an interactive SSH résumé built
+          with Go, Bubble Tea, and Wish. To try it, open a terminal and
+          run:{" "}
         </p>
         <code className="codeBlock">
           ssh alangeorge.dev
@@ -51,8 +52,8 @@ export default function Home() {
           </button>
         </code>
         <p>
-          If you don't want to SSH into the terminal yourself, you can click the
-          "Terminal Example" button below to try it out.
+          If you’d rather not connect over SSH from your own terminal, click the
+          “Terminal Example” button below to try it here.
         </p>
       </div>
       <div className="navButtons">
